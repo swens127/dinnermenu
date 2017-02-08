@@ -636,7 +636,7 @@ public class AddMeal extends javax.swing.JFrame {
             String tmpout;
             String stderr = "";
             boolean failed = false;
-            String cmd = "python recipe_extract.py " + url_textfield.getText() + " imported_url.food 60";
+            String cmd = "c:\\python27\\python recipe_extract.py " + url_textfield.getText() + " imported_url.food 60";
             Process p = Runtime.getRuntime().exec(cmd);
             BufferedReader bri = new BufferedReader(new InputStreamReader(p.getInputStream()));
             BufferedReader bre = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -661,7 +661,8 @@ public class AddMeal extends javax.swing.JFrame {
             parse_imported_url();
             System.out.println("Done.");
         } catch (IOException | InterruptedException err) {
-            err.printStackTrace();
+            //err.printStackTrace();
+            JOptionPane.showMessageDialog(popup, "Error while imporint recipe:\n" + err);
         }
     }//GEN-LAST:event_import_recipe_buttonActionPerformed
 
