@@ -36,6 +36,7 @@ public class InitialMenu extends javax.swing.JFrame {
 
     private static Component popup;
     private final String menu_file_name;
+    private final String common_ingredients_file_name;
     private final String settings_file_name;
     private final String backup_menu_file_name;
     private final String parsing_check;
@@ -61,14 +62,17 @@ public class InitialMenu extends javax.swing.JFrame {
         
         //Initial variables
         this.menu = new ArrayList<>();
+        this.common_ingredients = new ArrayList<>();
         this.menu_file_name = "menuDB.food";
         this.settings_file_name = "settings";
+        this.common_ingredients_file_name = "common_ingredients.txt";
         this.backup_menu_file_name = "menuDB.backup";
         this.parsing_check = "*&*&*";
         
         //Read in menu file, create backup, and read in settings:
         read_in_db();
         read_in_settings();
+        read_in_common_ingredients();
     }
 
     /**
@@ -212,7 +216,7 @@ public class InitialMenu extends javax.swing.JFrame {
         }
         dispose();
         CurrentIngredients next_window;
-        next_window = new CurrentIngredients(menu,Settings);
+        next_window = new CurrentIngredients(menu,Settings,common_ingredients);
         next_window.setVisible(true);
     }//GEN-LAST:event_get_new_menuActionPerformed
 
@@ -279,6 +283,7 @@ public class InitialMenu extends javax.swing.JFrame {
     private javax.swing.JButton settings;
     // End of variables declaration//GEN-END:variables
     private ArrayList<Meal> menu;
+    private ArrayList<String> common_ingredients;
     private Settings Settings;
     private String new_user_dialogue;
 
@@ -406,6 +411,20 @@ public class InitialMenu extends javax.swing.JFrame {
             if (!parse_fail) {
                 //Create backup file if parsing was successful
                 Files.copy(Paths.get(menu_file_name), Paths.get(backup_menu_file_name), REPLACE_EXISTING);
+            }
+        } 
+    }
+    
+    //Read in list of common ingredients to store in an ArrayList
+    final void read_in_common_ingredients() throws FileNotFoundException, IOException {
+        File f = new File(common_ingredients_file_name);
+        if (!f.exists()) {
+            return;
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(common_ingredients_file_name))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                this.common_ingredients.add(line);
             }
         } 
     }

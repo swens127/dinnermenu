@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -95,76 +96,20 @@ public class AddMeal extends javax.swing.JFrame {
         recipe.setWrapStyleWord(true);
         //ingredient_list = (new DefaultListModel<String>());
         
-        //Populate meal display
-        meal_display = "";
+        //Create new listmodel to repopulate the meal display
+        DefaultListModel listModel = new DefaultListModel();
+
+        //Update meal/indredient display
         for (int i = 0; i < menu.size(); i++) {
-            meal_display += menu.get(i).name + "\n";
+            listModel.addElement(menu.get(i).name);
         }
-        current_meals_display.setText(meal_display);
+        current_meals_display_list.setModel(listModel);
         
         //Prepopulate the screen if editing meal
         original_name = "";
         editing_meal = false;
         if (!prepop_meal_name.equals("")) {
-            original_name = prepop_meal_name;
-            editing_meal = true;
-            Meal prepop_meal = new Meal();
-            for (Meal meal : menu) {
-                if (meal.name.equals(prepop_meal_name)) {
-                    prepop_meal = meal;
-                    break;
-                }
-            }
-            meal_name.setText(prepop_meal.name);
-            this.ingredients = prepop_meal.ingredients;
- 
-            ingredient_display = "";
-            for (int i = 0; i < prepop_meal.ingredients.size(); i++) {
-                if (prepop_meal.ingredients.get(i).is_frac()) {
-                    //Check for empty quantity
-                    if (ingredients.get(i).is_frac()) {
-                        //If no quantity is set, it will show as a null fraction
-                        if (prepop_meal.ingredients.get(i).get_frac_quantity() != null) {
-                            ingredient_display += prepop_meal.ingredients.get(i).get_frac_quantity().toString() + " ";
-                        }
-                    } else {
-                        ingredient_display += prepop_meal.ingredients.get(i).get_dec_quantity() + " ";
-                    }
-                }
-                if (!prepop_meal.ingredients.get(i).get_measurement().isEmpty()) {
-                    ingredient_display += prepop_meal.ingredients.get(i).get_measurement() + " ";
-                }
-                if (!prepop_meal.ingredients.get(i).get_name().isEmpty()) {
-                    ingredient_display += prepop_meal.ingredients.get(i).get_name() + "\n";
-                }
-
-            }
-            ingredient_list.setText(ingredient_display);
-
-            recipe.setText(prepop_meal.recipe);
-            large_meal.setSelected(prepop_meal.large_meal);
-            fast_sunday_meal.setSelected(prepop_meal.fast_sunday);
-            quick_meal.setSelected(prepop_meal.quick_meal);
-            switch (prepop_meal.frequency) {
-                case 3:
-                    meal_frequency.setSelectedIndex(0);
-                    break;
-                case 2:
-                    meal_frequency.setSelectedIndex(1);
-                    break;
-                case 1:
-                    meal_frequency.setSelectedIndex(2);
-                    break;
-                case 0:
-                    meal_frequency.setSelectedIndex(3);
-                    break;
-            }
-            for (int i = 0; i < menu.size(); i++) {
-                if (menu.get(i).name.equals(prepop_meal.name)) {
-                    menu.remove(i);
-                    break;
-                }
-            }
+            populate_meal(prepop_meal_name);
         }
     }
 
@@ -188,8 +133,6 @@ public class AddMeal extends javax.swing.JFrame {
         go_back_button = new javax.swing.JButton();
         save_button = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        current_meals_display = new javax.swing.JTextArea();
         current_meals_label = new javax.swing.JLabel();
         current_ingredients_label = new javax.swing.JLabel();
         new_ingredient_label = new javax.swing.JLabel();
@@ -205,6 +148,8 @@ public class AddMeal extends javax.swing.JFrame {
         large_meal = new javax.swing.JCheckBox();
         url_textfield = new javax.swing.JTextField();
         import_recipe_button = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        current_meals_display_list = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -238,13 +183,6 @@ public class AddMeal extends javax.swing.JFrame {
         });
 
         jLabel3.setText("Recipe:");
-
-        current_meals_display.setEditable(false);
-        current_meals_display.setBackground(new java.awt.Color(180, 180, 180));
-        current_meals_display.setColumns(20);
-        current_meals_display.setRows(5);
-        current_meals_display.setFocusable(false);
-        jScrollPane3.setViewportView(current_meals_display);
 
         current_meals_label.setText("Saved Meals:");
 
@@ -288,6 +226,13 @@ public class AddMeal extends javax.swing.JFrame {
             }
         });
 
+        current_meals_display_list.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                current_meals_display_listMouseClicked(evt);
+            }
+        });
+        jScrollPane4.setViewportView(current_meals_display_list);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -309,7 +254,7 @@ public class AddMeal extends javax.swing.JFrame {
                                 .addComponent(url_textfield, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(import_recipe_button)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                                 .addComponent(save_button))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -359,7 +304,7 @@ public class AddMeal extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(current_meals_label)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -371,7 +316,7 @@ public class AddMeal extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(current_ingredients_label)
                             .addComponent(current_meals_label))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -405,13 +350,13 @@ public class AddMeal extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(fast_sunday_meal)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(quick_meal)
                                 .addComponent(large_meal))))
-                    .addComponent(jScrollPane3))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(meal_frequency, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -431,8 +376,6 @@ public class AddMeal extends javax.swing.JFrame {
     private void save_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_buttonActionPerformed
         Meal meal_to_save = new Meal();
         
-        //INITIAL CHECKS BEFORE SAVING MEAL//
-        
         //Check for no meal name
         if (meal_name.getText().isEmpty()) {
             JOptionPane.showMessageDialog(popup, "Must have meal name!");
@@ -442,6 +385,10 @@ public class AddMeal extends javax.swing.JFrame {
         meal_name_uppercase = Character.toUpperCase(meal_name.getText().charAt(0)) + meal_name.getText().substring(1);
         //Check for meal name reusage
         for (Meal meal : menu) {
+            System.out.println("Original name: " + original_name);
+            System.out.println("meal_name_uppercase: " + meal_name_uppercase);
+            System.out.println("meal.name: " + meal.name);
+            System.out.println("editing: " + editing_meal);
             if (meal_name_uppercase.equals(meal.name) && !editing_meal) {
                 JOptionPane.showMessageDialog(popup, "Name already in use!");
                 return;
@@ -449,6 +396,10 @@ public class AddMeal extends javax.swing.JFrame {
             if(!meal_name_uppercase.equals(original_name) && editing_meal && meal_name_uppercase.equals(meal.name)) {
                 JOptionPane.showMessageDialog(popup, "Can't overwrite another meal!");
                 return;
+            }
+            if(meal_name_uppercase.equals(original_name) && editing_meal && meal_name_uppercase.equals(meal.name)) {
+                menu.remove(meal);
+                break;
             }
         }
         
@@ -527,12 +478,14 @@ public class AddMeal extends javax.swing.JFrame {
             next_window.setVisible(true);
         }
         
+        //Create new listmodel to repopulate the meal display
+        DefaultListModel listModel = new DefaultListModel();
+
         //Update meal/indredient display
-        meal_display = "";
         for (int i = 0; i < menu.size(); i++) {
-            meal_display += menu.get(i).name + "\n";
+            listModel.addElement(menu.get(i).name);
         }
-        current_meals_display.setText(meal_display);
+        current_meals_display_list.setModel(listModel);
         ingredient_list.setText("");
         
         //Reset window
@@ -666,11 +619,15 @@ public class AddMeal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_import_recipe_buttonActionPerformed
 
+    private void current_meals_display_listMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_current_meals_display_listMouseClicked
+        populate_meal(current_meals_display_list.getSelectedValue());
+    }//GEN-LAST:event_current_meals_display_listMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton add_ingredient_button;
     private javax.swing.JLabel current_ingredients_label;
-    private javax.swing.JTextArea current_meals_display;
+    private javax.swing.JList<String> current_meals_display_list;
     private javax.swing.JLabel current_meals_label;
     private javax.swing.JCheckBox fast_sunday_meal;
     private javax.swing.JLabel frequency_label;
@@ -680,7 +637,7 @@ public class AddMeal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JCheckBox large_meal;
     private javax.swing.JComboBox meal_frequency;
     private javax.swing.JTextField meal_name;
@@ -698,7 +655,6 @@ public class AddMeal extends javax.swing.JFrame {
     private javax.swing.JTextField url_textfield;
     // End of variables declaration//GEN-END:variables
     private ArrayList<Meal> menu;
-    private String meal_display;
     private String ingredient_display;
     private ArrayList<Ingredient> ingredients;
     private final String menu_file_name;
@@ -708,6 +664,63 @@ public class AddMeal extends javax.swing.JFrame {
     private boolean editing_meal; //whether or not currently editing meal
     private String original_name; //original name, if editing meal
     
+    public void populate_meal(String prepop_meal_name) {
+        original_name = prepop_meal_name;
+        editing_meal = true;
+        Meal prepop_meal = new Meal();
+
+        for (Meal meal : menu) {
+            if (meal.name.equals(prepop_meal_name)) {
+                prepop_meal = meal;
+                break;
+            }
+        }
+        meal_name.setText(prepop_meal.name);
+        this.ingredients = prepop_meal.ingredients;
+
+        ingredient_display = "";
+        for (int i = 0; i < prepop_meal.ingredients.size(); i++) {
+            if (prepop_meal.ingredients.get(i).is_frac()) {
+                //Check for empty quantity
+                if (ingredients.get(i).is_frac()) {
+                    //If no quantity is set, it will show as a null fraction
+                    if (prepop_meal.ingredients.get(i).get_frac_quantity() != null) {
+                        ingredient_display += prepop_meal.ingredients.get(i).get_frac_quantity().toString() + " ";
+                    }
+                } else {
+                    ingredient_display += prepop_meal.ingredients.get(i).get_dec_quantity() + " ";
+                }
+            }
+            if (!prepop_meal.ingredients.get(i).get_measurement().isEmpty()) {
+                ingredient_display += prepop_meal.ingredients.get(i).get_measurement() + " ";
+            }
+            if (!prepop_meal.ingredients.get(i).get_name().isEmpty()) {
+                ingredient_display += prepop_meal.ingredients.get(i).get_name() + "\n";
+            }
+
+        }
+        ingredient_list.setText(ingredient_display);
+
+        recipe.setText(prepop_meal.recipe);
+        large_meal.setSelected(prepop_meal.large_meal);
+        fast_sunday_meal.setSelected(prepop_meal.fast_sunday);
+        quick_meal.setSelected(prepop_meal.quick_meal);
+        switch (prepop_meal.frequency) {
+            case 3:
+                meal_frequency.setSelectedIndex(0);
+                break;
+            case 2:
+                meal_frequency.setSelectedIndex(1);
+                break;
+            case 1:
+                meal_frequency.setSelectedIndex(2);
+                break;
+            case 0:
+                meal_frequency.setSelectedIndex(3);
+                break;
+        }
+
+    }
     public void update_ingredient_list_display()
     {
         ingredient_list.removeAll();
@@ -805,8 +818,8 @@ public class AddMeal extends javax.swing.JFrame {
                 File file = new File("imported_url.food");
             }
         } 
-        catch (IOException e) {
-            JOptionPane.showMessageDialog(popup, "Failed to import from URL :(");
+        catch (Exception e) {
+            JOptionPane.showMessageDialog(popup, "Failed to import from URL :(\nError: " + e);
         }
     }
     

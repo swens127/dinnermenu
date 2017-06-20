@@ -25,7 +25,7 @@ public class CurrentIngredients extends javax.swing.JFrame {
      * @param menu
      * @param settings
      */
-    public CurrentIngredients(ArrayList<Meal> menu, Settings settings) {
+    public CurrentIngredients(ArrayList<Meal> menu, Settings settings, ArrayList<String> common_ingredients) {
         setDefaultCloseOperation(CurrentIngredients.EXIT_ON_CLOSE);
         try {
             Image image = new ImageIcon("icon.png").getImage();
@@ -41,6 +41,7 @@ public class CurrentIngredients extends javax.swing.JFrame {
         
         this.settings = settings;
         this.menu = menu;
+        this.common_ingredients = common_ingredients;
     }
 
     /**
@@ -106,14 +107,14 @@ public class CurrentIngredients extends javax.swing.JFrame {
     private void yes_ingredientsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yes_ingredientsActionPerformed
         dispose();
         EnterIngredients next_window;
-        next_window = new EnterIngredients(menu,settings);
+        next_window = new EnterIngredients(menu,settings,common_ingredients);
         next_window.setVisible(true);
     }//GEN-LAST:event_yes_ingredientsActionPerformed
 
     private void no_ingredientsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_no_ingredientsActionPerformed
         dispose();
         MenuConfig next_window;
-        next_window = new MenuConfig(menu,settings,null);
+        next_window = new MenuConfig(menu,settings,null,common_ingredients);
         next_window.setVisible(true);
     }//GEN-LAST:event_no_ingredientsActionPerformed
 
@@ -124,4 +125,5 @@ public class CurrentIngredients extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     private final Settings settings;
     private ArrayList<Meal> menu;
+    private ArrayList<String> common_ingredients;
 }

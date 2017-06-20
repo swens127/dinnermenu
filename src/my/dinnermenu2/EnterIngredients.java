@@ -28,7 +28,7 @@ public class EnterIngredients extends javax.swing.JFrame {
      * @param menu
      * @param settings
      */
-    public EnterIngredients(ArrayList<Meal> menu,Settings settings) {
+    public EnterIngredients(ArrayList<Meal> menu,Settings settings, ArrayList<String> common_ingredients) {
         setDefaultCloseOperation(EnterIngredients.EXIT_ON_CLOSE);
         try {
             Image image = new ImageIcon("icon.png").getImage();
@@ -45,6 +45,7 @@ public class EnterIngredients extends javax.swing.JFrame {
         //Initialize variables
         this.settings = settings;
         this.menu = menu;
+        this.common_ingredients = common_ingredients;
         ingredients_for_use = new ArrayList<>();
         ingredient_display.setEditable(false);
         ingredient_name.requestFocus();
@@ -167,7 +168,7 @@ public class EnterIngredients extends javax.swing.JFrame {
     private void continue_forwardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_continue_forwardActionPerformed
         dispose();
         MenuConfig next_window;
-        next_window = new MenuConfig(menu,settings,ingredients_for_use);
+        next_window = new MenuConfig(menu,settings,ingredients_for_use,common_ingredients);
         next_window.setVisible(true);
     }//GEN-LAST:event_continue_forwardActionPerformed
 
@@ -254,4 +255,5 @@ public class EnterIngredients extends javax.swing.JFrame {
     private final Settings settings;
     private ArrayList<Meal> menu;
     private ArrayList<String> ingredients_for_count;
+    private ArrayList<String> common_ingredients;
 }

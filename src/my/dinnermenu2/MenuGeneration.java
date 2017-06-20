@@ -40,7 +40,7 @@ public class MenuGeneration extends javax.swing.JFrame {
      * @param fast_sunday
      * @param ingredients
      */
-    public MenuGeneration(ArrayList<Meal> menu, Settings settings, boolean[] eatout_meals, boolean[] quick_meals, boolean[] special_meals, boolean[] large_meals, boolean fast_sunday, ArrayList<String> ingredients) {
+    public MenuGeneration(ArrayList<Meal> menu, Settings settings, boolean[] eatout_meals, boolean[] quick_meals, boolean[] special_meals, boolean[] large_meals, boolean fast_sunday, ArrayList<String> ingredients, ArrayList<String> common_ingredients) {
         setDefaultCloseOperation(MenuConfig.EXIT_ON_CLOSE);
         try {
             Image image = new ImageIcon("icon.png").getImage();
@@ -76,6 +76,7 @@ public class MenuGeneration extends javax.swing.JFrame {
         this.special_meals = special_meals;
         this.fast_sunday = fast_sunday;
         this.ingredients_to_use = ingredients;
+        this.common_ingredients = common_ingredients;
         this.backup_ingredients_to_use = new ArrayList<>();
         if (ingredients != null) {
             this.backup_ingredients_to_use.addAll(ingredients);
@@ -387,6 +388,15 @@ public class MenuGeneration extends javax.swing.JFrame {
         next_window.setVisible(true);
     }//GEN-LAST:event_main_menu_buttonActionPerformed
 
+    private String check_common_ingredients(String ingredient) {
+        for (int i = 0; i < common_ingredients.size(); i++) {
+            if (ingredient.toLowerCase().contains(common_ingredients.get(i).toLowerCase())) {
+                return common_ingredients.get(i);
+            }
+        }
+        return ingredient;
+    }
+
     private void email_ingredients_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_email_ingredients_buttonActionPerformed
         //Check if emails have been entered
         if(settings.get_emails().isEmpty()) {
@@ -409,6 +419,7 @@ public class MenuGeneration extends javax.swing.JFrame {
                 new_ingredient_line += weekly_ingredients.get(i).get_measurement() + " ";
             }
             if (!weekly_ingredients.get(i).get_name().isEmpty()) {
+                //new_ingredient_line += check_common_ingredients(weekly_ingredients.get(i).get_name()) + " ";
                 new_ingredient_line += weekly_ingredients.get(i).get_name() + " ";
             }
             shopping_list += new_ingredient_line + "\n";
@@ -467,6 +478,7 @@ public class MenuGeneration extends javax.swing.JFrame {
     private boolean[] large_meals;
     private boolean fast_sunday;
     private ArrayList<String> ingredients_to_use;
+    private ArrayList<String> common_ingredients;
     private ArrayList<String> backup_ingredients_to_use;
     private ArrayList<Ingredient> weekly_ingredients;
     private boolean combine_quick_meals;

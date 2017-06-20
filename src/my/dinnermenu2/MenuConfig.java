@@ -29,7 +29,7 @@ public class MenuConfig extends javax.swing.JFrame {
      * @param settings
      * @param ingredients
      */
-    public MenuConfig(ArrayList<Meal> menu,Settings settings, ArrayList<String> ingredients) {
+    public MenuConfig(ArrayList<Meal> menu,Settings settings, ArrayList<String> ingredients, ArrayList<String> common_ingredients) {
         setDefaultCloseOperation(MenuConfig.EXIT_ON_CLOSE);
         try {
             Image image = new ImageIcon("icon.png").getImage();
@@ -47,6 +47,7 @@ public class MenuConfig extends javax.swing.JFrame {
         this.settings = settings;
         this.menu = menu;
         this.ingredients = ingredients;
+        this.common_ingredients = common_ingredients;
     }
 
     /**
@@ -389,7 +390,7 @@ public class MenuConfig extends javax.swing.JFrame {
         //Store menu configuration
         dispose();
         MenuGeneration next_window;
-        next_window = new MenuGeneration(menu,settings,eatout_meals,quick_meals,special_meals,large_meals,fast_sunday,ingredients);
+        next_window = new MenuGeneration(menu,settings,eatout_meals,quick_meals,special_meals,large_meals,fast_sunday,ingredients,common_ingredients);
         next_window.setVisible(true);
     }//GEN-LAST:event_continue_buttonActionPerformed
 
@@ -443,6 +444,7 @@ public class MenuConfig extends javax.swing.JFrame {
     private Settings settings;
     private ArrayList<Meal> menu;
     private ArrayList<String> ingredients;
+    private ArrayList<String> common_ingredients;
     
     public boolean[] assign_eatout_meals() {
         boolean[] eatout_meals = new boolean[7];
